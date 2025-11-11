@@ -1,0 +1,57 @@
+/*
+  styles.css
+  Tailwind entrypoint + small set of project-specific component classes.
+  - We import Tailwind layers (base, components, utilities)
+  - Then extend with minimal custom classes via @layer
+  Notes:
+  • Keep utilities minimal and semantic.
+  • Prefer @apply for consistent design tokens.
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base resets or HTML-level tweaks */
+@layer base {
+  /* Make app take full viewport height for better layouts */
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+}
+
+/* Project component-level utilities
+   Use these for quick composition across views. */
+@layer components {
+  /* Responsive centered container with comfortable max width and padding */
+  .container-pro {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Generic card surface used across app */
+  .card {
+    @apply bg-slate-800 rounded-xl overflow-hidden shadow-card border border-slate-700;
+  }
+
+  /* Base button styles for consistent sizing and spacing */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors duration-150;
+  }
+  /* Primary call-to-action button */
+  .btn-primary {
+    @apply btn bg-brand-600 hover:bg-brand-500 text-white;
+  }
+  /* Ghost/secondary button for less emphasis */
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-slate-800 text-slate-200;
+  }
+
+  /* Form controls with consistent focus ring */
+  .input {
+    @apply w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600;
+  }
+  .label {
+    @apply block text-sm font-medium text-slate-300 mb-1;
+  }
+}
