@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { validateMovie } from '../models/movies'
 
 /**
  * AddMovie
@@ -21,18 +22,16 @@ export default function AddMovie({ onAdd }) {
   const [errors, setErrors] = useState({})
 
   /**
-   * Validate current form values and collect field-specific errors.
-   * Returns true if valid, false otherwise.
+   * Validate current form values using model helper.
    */
   const validate = () => {
-    const e = {}
-    if (!form.title.trim()) e.title = 'Title is required'
-    if (!form.description.trim()) e.description = 'Description is required'
-    if (!/^https?:\/\//i.test(form.posterURL)) e.posterURL = 'Valid image URL required (http/https)'
-    if (form.rating < 0 || form.rating > 5) e.rating = 'Rating must be 0 to 5'
-    setErrors(e)
-    return Object.keys(e).length === 0
+    const { valid, errors } = validateMovie(form)
+    setErrors(errors)
+    return valid
   }
+
+  // Derived validity for disabling the submit button preemptively
+  const isValid = useMemo(() => validateMovie(form).valid, [form])
 
   // Clear errors whenever the form is closed
   useEffect(() => {
@@ -62,6 +61,12 @@ export default function AddMovie({ onAdd }) {
       {open && (
         // The movie creation form
         <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={submit} noValidate>
+          {/* Error summary */}
+          {Object.keys(errors).length > 0 && (
+            <div className="md:col-span-2 rounded-lg border border-rose-700 bg-rose-950/40 p-3 text-sm text-rose-300">
+              Please fix the errors below before saving.
+            </div>
+          )}
           <div>
             <label className="label" htmlFor="m-title">
               Title
@@ -69,8 +74,10 @@ export default function AddMovie({ onAdd }) {
             <input
               id="m-title"
               className="input"
+              required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
+              aria-invalid={!!errors.title}
             />
             {errors.title && <p className="text-rose-400 text-sm mt-1">{errors.title}</p>}
           </div>
@@ -87,6 +94,7 @@ export default function AddMovie({ onAdd }) {
               className="input"
               value={form.rating}
               onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
+              aria-invalid={!!errors.rating}
             />
             {errors.rating && <p className="text-rose-400 text-sm mt-1">{errors.rating}</p>}
           </div>
@@ -100,6 +108,8 @@ export default function AddMovie({ onAdd }) {
               className="input"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
+              required
+              aria-invalid={!!errors.description}
             />
             {errors.description && (
               <p className="text-rose-400 text-sm mt-1">{errors.description}</p>
@@ -115,6 +125,9 @@ export default function AddMovie({ onAdd }) {
               placeholder="https://..."
               value={form.posterURL}
               onChange={(e) => setForm({ ...form, posterURL: e.target.value })}
+              required
+              pattern="https?://.*"
+              aria-invalid={!!errors.posterURL}
             />
             {errors.posterURL && <p className="text-rose-400 text-sm mt-1">{errors.posterURL}</p>}
           </div>
@@ -135,7 +148,12 @@ export default function AddMovie({ onAdd }) {
             <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
+            <button
+              type="submit"
+              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!isValid}
+              title={!isValid ? 'Please fill all required fields' : 'Save Movie'}
+            >
               Save Movie
             </button>
           </div>

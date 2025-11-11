@@ -5,7 +5,7 @@ import AddMovie from './components/AddMovie'
 import MovieDetailsModal from './components/MovieDetailsModal'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import { loadMovies, saveMovies, addMovieWithId } from './models/movies'
+import { loadMovies, saveMovies, addMovieWithId, validateMovie } from './models/movies'
 
 /**
  * App
@@ -36,6 +36,8 @@ export default function App() {
 
   // Add a new movie using model helper for id + normalization
   const addMovie = (movie) => {
+    // Extra guard: ignore invalid payloads
+    if (!validateMovie(movie).valid) return
     setMovies((prev) => addMovieWithId(prev, movie))
   }
 

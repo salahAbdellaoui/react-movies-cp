@@ -26,6 +26,20 @@ export function createMovie(data) {
 }
 
 /**
+ * Validate movie payload. Returns { valid, errors }.
+ */
+export function validateMovie(data) {
+  const errors = {}
+  if (!String(data.title ?? '').trim()) errors.title = 'Title is required'
+  if (!String(data.description ?? '').trim()) errors.description = 'Description is required'
+  const url = String(data.posterURL ?? '').trim()
+  if (!/^https?:\/\//i.test(url)) errors.posterURL = 'Valid image URL required (http/https)'
+  const rating = Number.isFinite(data.rating) ? Number(data.rating) : NaN
+  if (!Number.isFinite(rating) || rating < 0 || rating > 5) errors.rating = 'Rating must be 0 to 5'
+  return { valid: Object.keys(errors).length === 0, errors }
+}
+
+/**
  * Compute next id based on current list.
  * @param {Array<{id:number}>} list
  */
@@ -123,6 +137,8 @@ export function saveMovies(list) {
  * Helper to add a movie with an auto id and normalization and return the new list.
  */
 export function addMovieWithId(list, movie) {
+  const { valid } = validateMovie(movie)
+  if (!valid) return list
   const id = getNextId(list)
   return [...list, createMovie({ ...movie, id })]
 }
