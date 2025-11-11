@@ -3,6 +3,8 @@ import Filter from './components/Filter'
 import MovieList from './components/MovieList'
 import AddMovie from './components/AddMovie'
 import MovieDetailsModal from './components/MovieDetailsModal'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import { loadMovies, saveMovies, addMovieWithId } from './models/movies'
 
 /**
@@ -42,25 +44,25 @@ export default function App() {
 
   return (
     <div>
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-10">
-        <div className="container-pro py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">🎬 Movie Showcase</h1>
-          <div className="hidden sm:block text-sm text-slate-400">React + Hooks + Tailwind</div>
-        </div>
-      </header>
+      <a id="top" />
+      <Navbar />
       <main className="container-pro py-8 space-y-8">
-        <Filter
+        <section id="filters">
+          <Filter
           title={titleFilter}
           onTitleChange={setTitleFilter}
           minRating={minRating}
           onMinRatingChange={setMinRating}
-        />
-        <AddMovie onAdd={addMovie} />
-        <MovieList movies={filteredMovies} onDetails={openDetails} />
+          />
+        </section>
+        <section id="add">
+          <AddMovie onAdd={addMovie} />
+        </section>
+        <section id="list">
+          <MovieList movies={filteredMovies} onDetails={openDetails} />
+        </section>
       </main>
-      <footer className="mt-16 py-8 text-center text-xs text-slate-500">
-        Built with React, Vite & Tailwind. © {new Date().getFullYear()}
-      </footer>
+      <Footer />
 
       <MovieDetailsModal open={!!selected} movie={selected} onClose={closeDetails} />
     </div>
